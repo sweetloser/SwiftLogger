@@ -1,0 +1,16 @@
+{
+  "File Header": {
+    "prefix": "fileheader",
+    "body": [
+      "/*",
+      " - File: ${TM_FILENAME}",
+      " - Project: ${workspaceFolder}",
+      " - Author: ${USER}",
+      " - Created: ${CURRENT_YEAR}-${CURRENT_MONTH}-${CURRENT_DATE} ${CURRENT_HOUR}:${CURRENT_MINUTE}",
+      " - Copyright © ${CURRENT_YEAR} ${USER}",
+      " */",
+      ""
+    ],
+    "description": "Insert file header comment for Swift files"
+  }
+}
