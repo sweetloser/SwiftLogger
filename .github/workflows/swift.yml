@@ -17,14 +17,14 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Select Xcode_16
-      run: sudo xcode-select -s /Applications/Xcode_16.app
+    - name: Select Xcode_26
+      run: sudo xcode-select -s /Applications/Xcode_26.app
     
     - name: Check Swift Version
       run: swift --version
 
     - name: Build
       run: swift build -v
-      
+
     - name: Run tests
       run: swift test -v
