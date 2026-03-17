@@ -15,3 +15,47 @@ extension Logger {
         case array([Metadata.Value])
     }
 }
+
+extension Logger.MetadataValue: ExpressibleByStringLiteral {
+    public typealias StringLiteralType = String
+    public init(stringLiteral value: String) {
+        self = .string(value)
+    }
+}
+
+extension Logger.MetadataValue: ExpressibleByStringInterpolation {}
+
+extension Logger.MetadataValue: ExpressibleByDictionaryLiteral {
+    
+    public typealias Key = String
+    public typealias Value = Logger.Metadata.Value
+    
+    public init(dictionaryLiteral elements: (String, Logger.Metadata.Value)...) {
+        self = .dictionary(.init(uniqueKeysWithValues: elements))
+    }
+}
+
+extension Logger.MetadataValue: ExpressibleByArrayLiteral {
+    
+    public typealias ArrayLiteralElement = Logger.Metadata.Value
+    
+    public init(arrayLiteral elements: Logger.Metadata.Value...) {
+        self = .array(elements)
+    }
+}
+
+extension Logger.MetadataValue: CustomStringConvertible {
+    
+    public var description: String {
+        switch self {
+        case .string(let string):
+            return string
+        case .stringConvertible(let repr):
+            return repr.description
+        case .dictionary(let dict):
+            return dict.mapValues { $0.description }.description
+        case .array(let array):
+            return array.map { $0.description }.description
+        }
+    }
+}

@@ -35,8 +35,8 @@ public struct StreamLogHandler: LogHandler {
             self.prettyMetadata = self.prettify(self.metadata)
         }
     }
-
-    public subscript(metadataKey: String) -> Logger.Metadata.Value? {
+    
+    public subscript(metadataKey metadataKey: String) -> Logger.Metadata.Value? {
         get {
             return self.metadata[metadataKey]
         }
@@ -45,7 +45,13 @@ public struct StreamLogHandler: LogHandler {
         }
     }
 
-    public func log(level: Logger.Level, message: Logger.Message, metadata explicitMetadata: Logger.Metadata?, source: String, file: String, function: String, line: UInt) {
+    public func log(level: Logger.Level,
+                    message: Logger.Message,
+                    metadata explicitMetadata: Logger.Metadata?,
+                    source: String,
+                    file: String,
+                    function: String,
+                    line: UInt) {
         let effectiveMetadata = StreamLogHandler.prepareMetadata(base: self.metadata, provider: self.metadataProvider, explicit: explicitMetadata)
 
         let prettyMetadata: String?
@@ -81,12 +87,12 @@ public struct StreamLogHandler: LogHandler {
 
 
     private func timestamp() -> String {
-        var buffer = [UInt8](repeating: 0, count: 256)
+        var buffer = [UInt8](repeating: 0, count: 255)
         var timestamp = time(nil)
         guard let localTime = localtime(&timestamp) else {
             return "<unknown>"
         }
-        strftime(&buffer, buffer.count, "%Y-%m-%d %H:%M:%S", localTime)
+        strftime(&buffer, buffer.count, "%Y-%m-%d %H:%M:%S%Z", localTime)
         return buffer.withUnsafeBufferPointer {
             $0.withMemoryRebound(to: CChar.self) {
                 String(cString: $0.baseAddress!)

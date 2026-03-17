@@ -23,6 +23,13 @@ public enum LoggingSystem {
         self._metadataProviderFactory.replace(metadataProvider, validate: true)
         self._factory.replace(factory, validate: true)
     }
+    
+    internal static var factory: (String, Logger.MetadataProvider?) -> any LogHandler {
+        { label, metadataProvider in
+            self._factory.underlying(label, metadataProvider)
+        }
+    }
+    
 
     public static var metadataProvider: Logger.MetadataProvider? {
         self._metadataProviderFactory.underlying
@@ -82,7 +89,7 @@ public enum LoggingSystem {
         }
     }
     
-    private typealias FactoryBox = ReplaceOnceBox< @Sendable (_ lable: String, _ provider: Logger.MetadataProvider) -> any LogHandler>
+    private typealias FactoryBox = ReplaceOnceBox< @Sendable (_ lable: String, _ provider: Logger.MetadataProvider?) -> any LogHandler>
 
     private typealias MetadataProviderBox = ReplaceOnceBox<Logger.MetadataProvider?>
 }
