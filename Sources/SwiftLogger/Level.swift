@@ -52,6 +52,7 @@ extension Logger.Level: CustomStringConvertible, LosslessStringConvertible {
     public init?(_ description: String) {
         self.init(rawValue: description.lowercased())
     }
-    
-    
 }
+
+// MARK: - Sendable support helpers.
+extension Logger.Level: Sendable {}

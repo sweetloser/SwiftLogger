@@ -23,3 +23,6 @@ extension Logger {
         }
     }
 }
+
+// MARK: - Sendable support helpers.
+extension Logger.Message: Sendable {}

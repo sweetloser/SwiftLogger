@@ -59,3 +59,6 @@ extension Logger.MetadataValue: CustomStringConvertible {
         }
     }
 }
+
+// MARK: - Sendable support helpers.
+extension Logger.MetadataValue: Sendable {}
