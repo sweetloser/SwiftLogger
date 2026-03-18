@@ -1,10 +1,6 @@
 # SwiftLogger
 
-[![CI](https://github.com/sweetloser/SwiftLogger/actions/workflows/ci.yml/badge.svg)](https://github.com/sweetloser/SwiftLogger/actions)
-[![Version](https://img.shields.io/github/v/tag/sweetloser/SwiftLogger)](https://github.com/sweetloser/SwiftLogger/tags)
-![Swift](https://img.shields.io/badge/Swift-6.1-orange.svg)
-![Platform](https://img.shields.io/badge/platform-iOS-lightgrey)
-[![License](https://img.shields.io/github/license/sweetloser/SwiftLogger)](https://github.com/sweetloser/SwiftLogger/blob/main/LICENSE)
+[![CI](https://github.com/sweetloser/SwiftLogger/actions/workflows/ci.yml/badge.svg)](https://github.com/sweetloser/SwiftLogger/actions) [![codecov](https://codecov.io/gh/sweetloser/SwiftLogger/branch/main/graph/badge.svg)](https://codecov.io/gh/sweetloser/SwiftLogger) [![Version](https://img.shields.io/github/v/tag/sweetloser/SwiftLogger)](https://github.com/sweetloser/SwiftLogger/tags) ![Swift](https://img.shields.io/badge/Swift-6.1-orange.svg) ![Platform](https://img.shields.io/badge/platform-iOS-lightgrey) [![License](https://img.shields.io/github/license/sweetloser/SwiftLogger)](https://github.com/sweetloser/SwiftLogger/blob/main/LICENSE)
 
 A lightweight, high-performance logging library written in Swift.
 
