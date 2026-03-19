@@ -19,6 +19,8 @@ public protocol FileHandler: LogHandler {
 
     var prettyMetadata: String? { get }
 
+    var stream: FileStream? { get }
+    
 }
 
 public extension FileHandler {
@@ -57,6 +59,15 @@ public extension FileHandler {
             return utf8Data
         }
         return data
+    }
+
+    subscript(metadataKey metadataKey: String) -> Logger.Metadata.Value? {
+        get {
+            self.metadata[metadataKey]
+        }
+        set {
+            self.metadata[metadataKey] = newValue
+        }
     }
 }
 
