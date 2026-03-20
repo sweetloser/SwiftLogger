@@ -23,7 +23,7 @@ internal class FileOutputStream: FileStream, @unchecked Sendable {
         }
         self.file = file
         
-        self.writedSize = 0
+        self.writedSize = UInt64(ftello(file))
     }
     
     func rotate(to newPath: String) {
@@ -31,7 +31,10 @@ internal class FileOutputStream: FileStream, @unchecked Sendable {
         guard let file = fopen(newPath, "a") else {
             return
         }
+        
         self.file = file
+        
+        self.writedSize = UInt64(ftello(file))
     }
     
     internal func close() {

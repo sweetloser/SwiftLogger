@@ -8,38 +8,25 @@
 import Foundation
 import SwiftLogger
 
-/// A protocol that extends `FileHandler` to add interfaces for log rotation.
-///
-/// Log rotation is the process of archiving the current log file and starting a new one
-/// based on certain criteria, such as file size or time. This helps manage disk space.
-public protocol RotatingFileLogHandler: FileHandler {
+public protocol RotatingFileLogHandler: AnyObject, FileHandler {
     
     associatedtype RotatingOptions: Hashable
-
-    var path: String { get set }
     
-    var logDir: String? { get }
-    var logFileName: String { get }
+    var path: String { get }
+
     var logIndex: UInt { get set }
     
     var options: RotatingOptions { get }
 
     var max: UInt? { get }
-    
+
+    var queue: DispatchQueue { get }
+        
     func rotate(data: Data) -> String?
 
     init(label: String, path: String, encoding: String.Encoding, options: RotatingOptions, max: UInt?)
 }
 
-extension RotatingFileLogHandler {
-    public var logDir: String? {
-        return (path as NSString).deletingLastPathComponent
-    }
-    
-    public var logFileName: String {
-        return (path as NSString).lastPathComponent
-    }
-}
 
 extension RotatingFileLogHandler {
     public func log(level: Logger.Level,
@@ -49,12 +36,49 @@ extension RotatingFileLogHandler {
                      file: String,
                      function: String,
                      line: UInt) {
-        let data = buildMessage(level: level, message: message, metadata: metadata, file: file, function: function, line: line)
-        
-        if let newLogPath = rotate(data: data) {
-            self.stream?.rotate(to: newLogPath)
+        let data = self.buildMessage(level: level, message: message, metadata: metadata, file: file, function: function, line: line)
+
+        let ts = CFAbsoluteTimeGetCurrent()
+        let seq = TLSBufferManager.shared.nextSequence()
+        let entry = LogEntry(timestamp: ts, seq: seq, data: data)
+
+        let buffer = TLSBufferManager.shared.currentBuffer()
+        if buffer.append(entry) {
+            flush()
         }
-        
-        stream?.write(data)
+    }
+    
+    private func flush() {
+        // When a single thread's buffer reaches capacity, collect entries from
+        // all thread-local buffers (and any pending destructor buffers) to
+        // ensure no entries are left behind and global ordering is preserved.
+        queue.async { [weak self] in
+            guard let self = self else { return }
+            let logs = TLSBufferManager.shared.drainAll()
+            guard !logs.isEmpty else { return }
+            self.writeBatch(logs)
+        }
+    }
+    
+    func writeBatch(_ logs: [LogEntry]) {
+        autoreleasepool {
+
+            // sort by timestamp then seq to ensure global chronological order
+            let sorted = logs.sorted { a, b in
+                if a.timestamp == b.timestamp {
+                    return a.seq < b.seq
+                }
+                return a.timestamp < b.timestamp
+            }
+
+            for entry in sorted {
+                let data = entry.data
+                if let newLogPath = rotate(data: data) {
+                    self.stream?.rotate(to: newLogPath)
+                }
+                stream?.write(data)
+            }
+            stream?.flush()
+        }
     }
 }

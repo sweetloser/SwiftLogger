@@ -13,5 +13,9 @@ public protocol FileStream {
     
     func write(_ data: Data)
     
+    func flush()
+
     func rotate(to newPath: String)
+    
+    func close()
 }

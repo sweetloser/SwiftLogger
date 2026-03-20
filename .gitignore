@@ -60,3 +60,11 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+
+# Coverage / profiling outputs
+*.profraw
+*.profdata
+coverage/
+
+# llvm-cov / profiler artifacts
+default.profraw
