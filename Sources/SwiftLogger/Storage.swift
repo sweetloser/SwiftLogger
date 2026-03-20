@@ -12,17 +12,17 @@ extension Logger {
         var label: String
 
         @usableFromInline
-        var hanler: any LogHandler
+        var handler: any LogHandler
 
         @inlinable
         init(label: String, handler: any LogHandler) {
             self.label = label
-            self.hanler = handler
+            self.handler = handler
         }
 
         @inlinable
         func copy() -> Storage {
-            return Storage(label: self.label, handler: self.hanler)
+            return Storage(label: self.label, handler: self.handler)
         }
     }
 }

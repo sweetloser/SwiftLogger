@@ -15,12 +15,12 @@ public struct Logger {
 
     @inlinable
     public var handler: any LogHandler {
-        get { return self._storage.hanler }
+        get { return self._storage.handler }
         set {
             if !isKnownUniquelyReferenced(&self._storage) {
                 self._storage = self._storage.copy()
             }
-            self._storage.hanler = newValue
+            self._storage.handler = newValue
         }
     }
     
@@ -77,6 +77,7 @@ extension Logger {
                     file: String = #fileID,
                     function: String = #function,
                     line: UInt = #line) {
+        self._log(level: level, message(), metadata: metadata(), source: source(), file: file, function: function, line: line)
     }
     
     @inlinable

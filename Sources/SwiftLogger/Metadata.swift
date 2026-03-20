@@ -23,7 +23,11 @@ extension Logger.MetadataValue: ExpressibleByStringLiteral {
     }
 }
 
-extension Logger.MetadataValue: ExpressibleByStringInterpolation {}
+extension Logger.MetadataValue: ExpressibleByStringInterpolation {
+    public init(stringInterpolation: DefaultStringInterpolation) {
+        self = .string(stringInterpolation.description)
+    }
+}
 
 extension Logger.MetadataValue: ExpressibleByDictionaryLiteral {
     

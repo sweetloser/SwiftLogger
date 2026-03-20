@@ -18,6 +18,10 @@ extension Logger {
             self.value = value
         }
 
+        public init(stringInterpolation: DefaultStringInterpolation) {
+            self.value = stringInterpolation.description
+        }
+
         public var description: String {
             return self.value
         }

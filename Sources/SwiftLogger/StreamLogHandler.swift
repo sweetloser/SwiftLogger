@@ -8,28 +8,19 @@
 import Foundation
 
 public struct StreamLogHandler: LogHandler {
+
     internal typealias _SendableTextOutputStream = TextOutputStream & Sendable
-
-    public static func standardOutput(label: String) -> StreamLogHandler {
-        StreamLogHandler(label: label, stream: StdioOutputStream.stdout)
-    }
-    public static func standardOutput(label: String, metadataProvider: Logger.MetadataProvider?) -> StreamLogHandler {
-        StreamLogHandler(label: label, stream: StdioOutputStream.stdout,  metadataProvider: metadataProvider)
-    }
-    public static func standardError(label: String) -> StreamLogHandler {
-        StreamLogHandler(label: label, stream: StdioOutputStream.stderr)
-    }
-    public static func standardError(label: String, metadataProvider: Logger.MetadataProvider?) -> StreamLogHandler {
-        StreamLogHandler(label: label, stream: StdioOutputStream.stderr, metadataProvider: metadataProvider)
-    }
-
+    
     private let stream: _SendableTextOutputStream
+    
     public let label: String
 
     public var logLevel: Logger.Level = .info
 
     public var metadataProvider: Logger.MetadataProvider?
+
     private var prettyMetadata: String?
+    
     public var metadata = Logger.Metadata() {
         didSet {
             self.prettyMetadata = self.prettify(self.metadata)
@@ -118,3 +109,17 @@ public struct StreamLogHandler: LogHandler {
     }
 }
 
+extension StreamLogHandler {
+    public static func standardOutput(label: String) -> StreamLogHandler {
+        StreamLogHandler(label: label, stream: StdioOutputStream.stdout)
+    }
+    public static func standardOutput(label: String, metadataProvider: Logger.MetadataProvider?) -> StreamLogHandler {
+        StreamLogHandler(label: label, stream: StdioOutputStream.stdout,  metadataProvider: metadataProvider)
+    }
+    public static func standardError(label: String) -> StreamLogHandler {
+        StreamLogHandler(label: label, stream: StdioOutputStream.stderr)
+    }
+    public static func standardError(label: String, metadataProvider: Logger.MetadataProvider?) -> StreamLogHandler {
+        StreamLogHandler(label: label, stream: StdioOutputStream.stderr, metadataProvider: metadataProvider)
+    }
+}
