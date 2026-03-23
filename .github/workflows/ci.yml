@@ -24,7 +24,33 @@ jobs:
       env:
         SWIFT_BACKTRACE: enable
         SWIFT_BACKTRACE_MAX_FRAMES: "256"
-      run: swift test --filter "Level" --enable-code-coverage
+        LLVM_PROFILE_FILE: .build/coverage/%m-%p.profraw
+      run: |
+        set -euo pipefail
+
+        mkdir -p .build/coverage
+
+        # 逐个执行（方便定位 SIGSEGV/崩溃发生在哪个 suite）
+        # Swift Testing 的 --filter 支持按名字匹配（suite/test 名称的子串）
+        suites=(
+          "Lock Tests"
+          "ReadWriteLock Tests"
+          "Logger.Level Tests"
+          "Logger.Message Tests"
+          "Logger.MetadataValue Tests"
+          "Logger.MetadataProvider Tests"
+          "LogHandler Tests"
+          "Logger.Storage Tests"
+          "StreamLogHandler Tests"
+          "StdioOutputStream Tests"
+          "LoggingSystem Tests"
+          "Logger Tests"
+        )
+
+        for s in "${suites[@]}"; do
+          echo "==== Running suite: $s ===="
+          swift test --enable-code-coverage --parallel false --filter "$s"
+        done
 
     # ✅ 生成 lcov
     - name: Generate coverage report
