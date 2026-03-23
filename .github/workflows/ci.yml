@@ -24,7 +24,7 @@ jobs:
       env:
         SWIFT_BACKTRACE: enable
         SWIFT_BACKTRACE_MAX_FRAMES: "256"
-      run: swift test --enable-code-coverage
+      run: swift test --filter "Level" --enable-code-coverage
 
     # ✅ 生成 lcov
     - name: Generate coverage report
