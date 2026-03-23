@@ -24,33 +24,7 @@ jobs:
       env:
         SWIFT_BACKTRACE: enable
         SWIFT_BACKTRACE_MAX_FRAMES: "256"
-        LLVM_PROFILE_FILE: .build/coverage/%m-%p.profraw
-      run: |
-        set -euo pipefail
-
-        mkdir -p .build/coverage
-
-        # 逐个执行（方便定位 SIGSEGV/崩溃发生在哪个 suite）
-        # Swift Testing 的 --filter 支持按名字匹配（suite/test 名称的子串）
-        suites=(
-          "Lock Tests"
-          "ReadWriteLock Tests"
-          "Logger.Level Tests"
-          "Logger.Message Tests"
-          "Logger.MetadataValue Tests"
-          "Logger.MetadataProvider Tests"
-          "LogHandler Tests"
-          "Logger.Storage Tests"
-          "StreamLogHandler Tests"
-          "StdioOutputStream Tests"
-          "LoggingSystem Tests"
-          "Logger Tests"
-        )
-
-        for s in "${suites[@]}"; do
-          echo "==== Running suite: $s ===="
-          swift test --enable-code-coverage --filter "$s"
-        done
+      run: swift test --enable-code-coverage --no-parallel
 
     # ✅ 生成 lcov
     - name: Generate coverage report
@@ -59,7 +33,8 @@ jobs:
 
         PROF_DATA=$(find .build -name "*.profdata" | head -n 1)
 
-        BINARY=$(find .build -type f -perm +111 | grep -E "Tests.xctest|PackageTests" | head -n 1)
+        # BSD find (macOS) 不支持 `-perm +111`，使用 `-perm -111`
+        BINARY=$(find .build -type f -perm -111 -path "*.xctest/Contents/MacOS/*" | head -n 1)
 
         echo "PROF_DATA=$PROF_DATA"
         echo "BINARY=$BINARY"
