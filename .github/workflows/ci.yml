@@ -49,7 +49,7 @@ jobs:
 
         for s in "${suites[@]}"; do
           echo "==== Running suite: $s ===="
-          swift test --enable-code-coverage --parallel false --filter "$s"
+          swift test --enable-code-coverage --filter "$s"
         done
 
     # ✅ 生成 lcov
