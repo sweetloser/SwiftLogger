@@ -6,6 +6,11 @@
 //
 
 import Foundation
+#if canImport(Darwin)
+import Darwin
+#elseif canImport(Glibc)
+import Glibc
+#endif
 
 internal typealias CFilePointer = UnsafeMutablePointer<FILE>
 
@@ -35,12 +40,16 @@ internal struct StdioOutputStream: TextOutputStream, @unchecked Sendable {
     }
 
     internal static let stderr = {
-        let systemStderr = Darwin.stderr
-        return StdioOutputStream(file: systemStderr, flushMode: .always)
+        guard let file = fdopen(dup(STDERR_FILENO), "a") else {
+            fatalError("failed to open duplicated stderr stream")
+        }
+        return StdioOutputStream(file: file, flushMode: .always)
     }()
     internal static let stdout = {
-        let systemStdout = Darwin.stdout
-        return StdioOutputStream(file: systemStdout, flushMode: .always)
+        guard let file = fdopen(dup(STDOUT_FILENO), "a") else {
+            fatalError("failed to open duplicated stdout stream")
+        }
+        return StdioOutputStream(file: file, flushMode: .always)
     }()
 
     internal enum FlushMode {
