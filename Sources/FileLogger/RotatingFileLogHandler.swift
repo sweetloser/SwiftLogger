@@ -38,7 +38,7 @@ extension RotatingFileLogHandler {
                      line: UInt) {
         let data = self.buildMessage(level: level, message: message, metadata: metadata, file: file, function: function, line: line)
 
-        let ts = CFAbsoluteTimeGetCurrent()
+        let ts = Date().timeIntervalSinceReferenceDate
         let seq = TLSBufferManager.shared.nextSequence()
         let entry = LogEntry(timestamp: ts, seq: seq, data: data)
 
@@ -61,24 +61,21 @@ extension RotatingFileLogHandler {
     }
     
     func writeBatch(_ logs: [LogEntry]) {
-        autoreleasepool {
-
-            // sort by timestamp then seq to ensure global chronological order
-            let sorted = logs.sorted { a, b in
-                if a.timestamp == b.timestamp {
-                    return a.seq < b.seq
-                }
-                return a.timestamp < b.timestamp
+        // sort by timestamp then seq to ensure global chronological order
+        let sorted = logs.sorted { a, b in
+            if a.timestamp == b.timestamp {
+                return a.seq < b.seq
             }
-
-            for entry in sorted {
-                let data = entry.data
-                if let newLogPath = rotate(data: data) {
-                    self.stream?.rotate(to: newLogPath)
-                }
-                stream?.write(data)
-            }
-            stream?.flush()
+            return a.timestamp < b.timestamp
         }
+
+        for entry in sorted {
+            let data = entry.data
+            if let newLogPath = rotate(data: data) {
+                self.stream?.rotate(to: newLogPath)
+            }
+            stream?.write(data)
+        }
+        stream?.flush()
     }
 }

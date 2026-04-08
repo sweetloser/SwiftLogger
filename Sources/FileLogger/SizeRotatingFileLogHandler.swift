@@ -71,7 +71,7 @@ public final class SizeRotatingFileLogHandler: RotatingFileLogHandler, @unchecke
                 self.currentFlushInterval = Swift.min(self.maxFlushInterval, Swift.max(self.minFlushInterval, self.currentFlushInterval * 2))
             } else {
                 // reset to aggressive interval when activity seen
-                self.currentFlushInterval = Swift.max(self.minFlushInterval, self.currentFlushInterval)
+                self.currentFlushInterval = self.minFlushInterval
                 self.writeBatch(logs)
             }
             // reschedule with new interval
@@ -101,9 +101,6 @@ public final class SizeRotatingFileLogHandler: RotatingFileLogHandler, @unchecke
 
         stream?.flush()
         stream?.close()
-        
-        print("====测试时间==\(CFAbsoluteTimeGetCurrent())")
-        
     }
     
     public func rotate(data: Data) -> String? {

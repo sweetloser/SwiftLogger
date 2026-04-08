@@ -11,7 +11,7 @@ internal final class TLSBufferManager: @unchecked Sendable {
     private let defaultBufferCapacity = 100
 
     private let buffersLock = NSLock()
-    private var buffers = NSHashTable<AnyObject>.weakObjects()
+    private var buffers: [WeakBufferBox] = []
 
     // pending buffers pushed from thread destructor
     private let pendingLock = NSLock()
@@ -57,7 +57,7 @@ internal final class TLSBufferManager: @unchecked Sendable {
         pthread_setspecific(key.pointee, unmanaged.toOpaque())
 
         buffersLock.lock()
-        buffers.add(buf)
+        buffers.append(WeakBufferBox(buf))
         buffersLock.unlock()
 
         return buf
@@ -74,7 +74,9 @@ internal final class TLSBufferManager: @unchecked Sendable {
 
         // collect from live buffers
         buffersLock.lock()
-        for case let obj as ThreadLocalBuffer in buffers.allObjects {
+        buffers.removeAll(where: { $0.value == nil })
+        for box in buffers {
+            guard let obj = box.value else { continue }
             let logs = obj.takeAll()
             if !logs.isEmpty {
                 result.append(contentsOf: logs)
@@ -101,5 +103,13 @@ internal final class TLSBufferManager: @unchecked Sendable {
         let v = seqCounter
         seqLock.unlock()
         return v
+    }
+}
+
+private final class WeakBufferBox {
+    weak var value: ThreadLocalBuffer?
+
+    init(_ value: ThreadLocalBuffer) {
+        self.value = value
     }
 }
